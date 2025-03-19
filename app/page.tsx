@@ -8,8 +8,6 @@ import Link from "next/link";
 
 // Icons
 import { AudioLines, Pen, Tag, Github, Send, Archive } from "lucide-react";
-import { WordPressIcon } from "@/components/icons/wordpress";
-import { NextJsIcon } from "@/components/icons/nextjs";
 
 // This page is using the craft.tsx component and design system
 export default function Home() {
