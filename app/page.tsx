@@ -27,11 +27,11 @@ const ToDelete = () => {
     <main className="space-y-6">
       <Prose>
         <h1>
-          <Balancer>I'm Tom, a web developer from Birmingham, UK</Balancer>
+          <Balancer>I&#39;m Tom, a web developer from Birmingham, UK</Balancer>
         </h1>
 
         <p>
-          I'm currently a member of the team at <a href="https://theideabureau.co" target="_blank">The Idea Bureau</a>,
+          I&#39;m currently a member of the team at <a href="https://theideabureau.co" target="_blank">The Idea Bureau</a>,
           an agency focused on delivering impactful and innovative digital solutions for charities, non-profits and NGOs.
         </p>
 
@@ -40,7 +40,7 @@ const ToDelete = () => {
         </p>
         
         <p>
-          My intention for this site is to become an opportunity to experiment with web technologies that I otherwise wouldn't get chance to play around with,
+          My intention for this site is to become an opportunity to experiment with web technologies that I otherwise wouldn&#39;t get chance to play around with,
           in an attempt to learn new things and improve my skillset. With that in mind, please be prepared for downtime, odd design choices, and general quirks and wonkiness.
         </p>
 
