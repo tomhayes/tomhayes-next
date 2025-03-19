@@ -1,12 +1,13 @@
 // Craft Imports
 import { Section, Container, Prose } from "@/components/craft";
 import Balancer from "react-wrap-balancer";
+import { getPageBySlug } from "@/lib/wordpress";
 
 // Next.js Imports
 import Link from "next/link";
 
 // Icons
-import { File, Pen, Tag, Diamond, User, Folder } from "lucide-react";
+import { AudioLines, Pen, Tag, Github, Send, Archive } from "lucide-react";
 import { WordPressIcon } from "@/components/icons/wordpress";
 import { NextJsIcon } from "@/components/icons/nextjs";
 
@@ -15,39 +16,26 @@ export default function Home() {
   return (
     <Section>
       <Container>
-        <ToDelete />
+        <HomeContent />
       </Container>
     </Section>
   );
 }
 
-// This is just some example TSX
-const ToDelete = () => {
+const HomeContent = async () => {
+
+    const page = await getPageBySlug('home');
   return (
+
+    
     <main className="space-y-6">
+
       <Prose>
         <h1>
-          <Balancer>I&#39;m Tom, a web developer from Birmingham, UK</Balancer>
+          <Balancer>{page.title.rendered}</Balancer>
         </h1>
 
-        <p>
-          I&#39;m currently a member of the team at <a href="https://theideabureau.co" target="_blank">The Idea Bureau</a>,
-          an agency focused on delivering impactful and innovative digital solutions for charities, non-profits and NGOs.
-        </p>
-
-        <p>
-          Welcome to my own little playground on the web - a space for exploratory development and my own musings.
-        </p>
-        
-        <p>
-          My intention for this site is to become an opportunity to experiment with web technologies that I otherwise wouldn&#39;t get chance to play around with,
-          in an attempt to learn new things and improve my skillset. With that in mind, please be prepared for downtime, odd design choices, and general quirks and wonkiness.
-        </p>
-
-        <p>
-          Any opinions or views expressed on this site are strictly my own and do not represent the opinions or views of my employer.
-        </p>
-
+        <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
       </Prose>
 
       <div className="flex justify-between items-center gap-4">
@@ -86,31 +74,7 @@ const ToDelete = () => {
           <span>
             Blog{" "}
             <span className="block text-sm text-muted-foreground">
-              Read my blog posts
-            </span>
-          </span>
-        </Link>
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/pages"
-        >
-          <File size={32} />
-          <span>
-            Pages{" "}
-            <span className="block text-sm text-muted-foreground">
-              Custom pages from your WordPress
-            </span>
-          </span>
-        </Link>
-        <Link
-          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="/posts/authors"
-        >
-          <User size={32} />
-          <span>
-            Authors{" "}
-            <span className="block text-sm text-muted-foreground">
-              List of the authors from your WordPress
+              Read all of my blog posts
             </span>
           </span>
         </Link>
@@ -122,7 +86,7 @@ const ToDelete = () => {
           <span>
             Tags{" "}
             <span className="block text-sm text-muted-foreground">
-              Content by tags from your WordPress
+              Browse posts by tag
             </span>
           </span>
         </Link>
@@ -130,26 +94,50 @@ const ToDelete = () => {
           className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
           href="/posts/categories"
         >
-          <Diamond size={32} />
+          <Archive size={32} />
           <span>
             Categories{" "}
             <span className="block text-sm text-muted-foreground">
-              Categories from your WordPress
+              Browse posts by category
             </span>
           </span>
         </Link>
         <a
           className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
-          href="https://github.com/9d8dev/next-wp/blob/main/README.md"
+          href="https://github.com/tomhayes" target="_blank"
         >
-          <Folder size={32} />
+          <Github size={32} />
           <span>
-            Documentation{" "}
+            GitHub{" "}
             <span className="block text-sm text-muted-foreground">
-              How to use `next-wp`
+              Check out my GitHub profile
             </span>
           </span>
         </a>
+        <a
+          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
+          href="https://open.spotify.com/artist/2BgPc7ntKZPIKjp1psPbAv" target="_blank"
+        >
+          <AudioLines size={32} />
+          <span>
+            Spotify{" "}
+            <span className="block text-sm text-muted-foreground">
+              Did I mention I (try to) make music too?
+            </span>
+          </span>
+        </a>
+        <Link
+          className="border h-48 bg-accent/50 rounded-lg p-4 flex flex-col justify-between hover:scale-[1.02] transition-all"
+          href="/posts/categories"
+        >
+          <Send size={32} />
+          <span>
+            Contact{" "}
+            <span className="block text-sm text-muted-foreground">
+              Get in touch with me
+            </span>
+          </span>
+        </Link>
       </div>
     </main>
   );
