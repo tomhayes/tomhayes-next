@@ -94,7 +94,7 @@ const Nav = ({ className, children, id }: NavProps) => {
             ))}
           </div>
           <Button asChild className="hidden sm:flex">
-            <Link href="https://github.com/9d8dev/next-wp">Get Started</Link>
+            <Link href="/contact">Get in touch</Link>
           </Button>
           <MobileNav />
         </div>
@@ -152,7 +152,7 @@ const Footer = () => {
           <ThemeToggle />
           <div className="text-right">
             <p className="text-muted-foreground text-xs">
-              &copy; 2025. <a href="https://TomHay.es">Tom Hayes</a>. All rights reserved.</p>
+              &copy; 2025 <a href="https://TomHay.es">Tom Hayes</a> - All rights reserved.</p>
             <p className="text-muted-foreground text-xs">
               Any opinions or views expressed on this site are strictly my own and do not represent the opinions or views of my employer.
             </p>
