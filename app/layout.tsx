@@ -150,10 +150,13 @@ const Footer = () => {
         </Container>
         <Container className="border-t not-prose flex flex-col md:flex-row md:gap-2 gap-6 justify-between md:items-center">
           <ThemeToggle />
-          <p className="text-muted-foreground">
-            &copy; <a href="https://TomHay.es">Tom Hayes</a>. All rights reserved.
-            2025-present.
-          </p>
+          <div className="text-right">
+            <p className="text-muted-foreground text-xs">
+              &copy; 2025. <a href="https://TomHay.es">Tom Hayes</a>. All rights reserved.</p>
+            <p className="text-muted-foreground text-xs">
+              Any opinions or views expressed on this site are strictly my own and do not represent the opinions or views of my employer.
+            </p>
+          </div>
         </Container>
       </Section>
     </footer>
