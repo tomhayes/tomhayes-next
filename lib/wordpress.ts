@@ -38,7 +38,7 @@ function getUrl(path: string, query?: Record<string, any>) {
 const defaultFetchOptions: FetchOptions = {
   next: {
     tags: ["wordpress"],
-    revalidate: 3600, // Revalidate every hour by default
+    revalidate: 60, // Revalidate every minute - TODO: Increase this
   },
 };
 
