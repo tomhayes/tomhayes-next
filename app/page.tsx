@@ -29,8 +29,8 @@ const HomeContent = async () => {
     <main className="space-y-12">
 
       <Prose>
-        <h1>
-          <Balancer>{page.title.rendered}</Balancer>
+        <h1 class="max-w-3xl">
+          <Balancer dangerouslySetInnerHTML={{ __html: page.title.rendered }} />
         </h1>
 
         <div dangerouslySetInnerHTML={{ __html: page.content.rendered }} />
