@@ -12,7 +12,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { siteConfig } from "@/site.config";
 
 import Balancer from "react-wrap-balancer";
-import Logo from "@/public/logo.svg";
+import Logo from "@/public/th-logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 
