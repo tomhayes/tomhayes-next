@@ -6,7 +6,16 @@ import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/nav/mobile-nav";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { mainMenu, contentMenu } from "@/menu.config";
+import { mainMenu, contentMenu, dropdownMenus } from "@/menu.config";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 import { Section, Container } from "@/components/craft";
 import { Analytics } from "@vercel/analytics/react";
 import { siteConfig } from "@/site.config";
@@ -84,13 +93,41 @@ const Nav = ({ className, children, id }: NavProps) => {
         </Link>
         {children}
         <div className="flex items-center gap-2">
-          <div className="mx-2 hidden md:flex">
+          <div className="mx-2 hidden md:flex items-center gap-4">
+            {/* Regular menu items */}
             {Object.entries(mainMenu).map(([key, href]) => (
-              <Button key={href} asChild variant="ghost" size="sm">
-                <Link href={href}>
-                  {key.charAt(0).toUpperCase() + key.slice(1)}
-                </Link>
-              </Button>
+              <Link
+                key={href}
+                href={href}
+                className="text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60"
+              >
+                {key.charAt(0).toUpperCase() + key.slice(1)}
+              </Link>
+            ))}
+            
+            {/* Dropdown menus */}
+            {Object.entries(dropdownMenus).map(([menuTitle, items]) => (
+              <div key={menuTitle} className="relative group">
+                <button className="text-sm font-medium transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1">
+                  {menuTitle}
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <div className="absolute top-full left-0 mt-1 w-32 bg-background border border-border rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-1">
+                    {items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="block px-4 py-2 text-sm text-foreground/80 hover:bg-accent hover:text-accent-foreground transition-colors"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
           <Button asChild className="hidden sm:flex">
@@ -107,7 +144,7 @@ const Footer = () => {
   return (
     <footer>
       <Section>
-        <Container className="grid md:grid-cols-[1.5fr_0.5fr_0.5fr] gap-12">
+        <Container className="grid md:grid-cols-[1.5fr_0.5fr_0.5fr_0.5fr] gap-12">
           <div className="flex flex-col gap-6 not-prose">
             <Link href="/">
               <h3 className="sr-only">{siteConfig.site_name}</h3>
@@ -147,6 +184,20 @@ const Footer = () => {
               </Link>
             ))}
           </div>
+          {Object.entries(dropdownMenus).map(([menuTitle, items]) => (
+            <div key={menuTitle} className="flex flex-col gap-2 text-sm">
+              <h5 className="font-medium text-base">{menuTitle}</h5>
+              {items.map((item) => (
+                <Link
+                  className="hover:underline underline-offset-4"
+                  key={item.href}
+                  href={item.href}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          ))}
         </Container>
         <Container className="border-t not-prose flex flex-col md:flex-row md:gap-2 gap-6 justify-between md:items-center">
           <ThemeToggle />
