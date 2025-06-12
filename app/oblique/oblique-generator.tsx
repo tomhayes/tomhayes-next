@@ -267,7 +267,7 @@ export default function ObliqueGenerator() {
                                 <blockquote className={`text-center font-medium text-gray-900 dark:text-gray-100 leading-relaxed ${
                                     strategies.length === 1 ? 'text-xl md:text-2xl' : 'text-lg'
                                 }`}>
-                                    "{strategy.text}"
+                                    {strategy.text}
                                 </blockquote>
                             </div>
                         ))}
