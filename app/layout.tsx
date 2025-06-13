@@ -9,6 +9,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { mainMenu, contentMenu } from "@/menu.config";
 import { Section, Container } from "@/components/craft";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@/components/analytics";
 import { siteConfig } from "@/site.config";
 
 import Balancer from "react-wrap-balancer";
@@ -53,6 +54,9 @@ export default function RootLayout({
           <Footer />
         </ThemeProvider>
         <Analytics />
+        {siteConfig.ga_measurement_id && (
+          <GoogleAnalytics measurementId={siteConfig.ga_measurement_id} />
+        )}
       </body>
     </html>
   );
