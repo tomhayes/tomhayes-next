@@ -67,17 +67,15 @@ export function MobileNav() {
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </MobileLink>
             ))}
-            {Object.entries(dropdownMenus).map(([menuTitle, items]) => (
-              <div key={menuTitle}>
-                <h3 className="text-small pt-6">{menuTitle}</h3>
-                <Separator />
-                {items.map((item) => (
-                  <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}>
-                    {item.label}
-                  </MobileLink>
-                ))}
-              </div>
-            ))}
+            {Object.entries(dropdownMenus).map(([menuTitle, items]) => [
+              <h3 key={`${menuTitle}-header`} className="text-small pt-6">{menuTitle}</h3>,
+              <Separator key={`${menuTitle}-separator`} />,
+              ...items.map((item) => (
+                <MobileLink key={item.href} href={item.href} onOpenChange={setOpen}>
+                  {item.label}
+                </MobileLink>
+              ))
+            ]).flat()}
           </div>
         </ScrollArea>
       </SheetContent>

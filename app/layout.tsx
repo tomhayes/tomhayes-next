@@ -5,8 +5,9 @@ import { Inter as FontSans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/nav/mobile-nav";
+import { HoverDropdown } from "@/components/nav/hover-dropdown";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { mainMenu, contentMenu } from "@/menu.config";
+import { mainMenu, contentMenu, dropdownMenus } from "@/menu.config";
 import { Section, Container } from "@/components/craft";
 import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@/components/analytics";
@@ -96,6 +97,9 @@ const Nav = ({ className, children, id }: NavProps) => {
                 </Link>
               </Button>
             ))}
+            {Object.entries(dropdownMenus).map(([title, items]) => (
+              <HoverDropdown key={title} title={title} items={items} />
+            ))}
           </div>
           <Button asChild className="hidden sm:flex">
             <Link href="/contact">Get in touch</Link>
@@ -111,7 +115,7 @@ const Footer = () => {
   return (
     <footer>
       <Section>
-        <Container className="grid md:grid-cols-[1.5fr_0.5fr_0.5fr] gap-12">
+        <Container className="grid md:grid-cols-[1.5fr_0.5fr_0.5fr_0.5fr] gap-12">
           <div className="flex flex-col gap-6 not-prose">
             <Link href="/">
               <h3 className="sr-only">{siteConfig.site_name}</h3>
@@ -150,6 +154,20 @@ const Footer = () => {
                 {key.charAt(0).toUpperCase() + key.slice(1)}
               </Link>
             ))}
+          </div>
+          <div className="flex flex-col gap-2 text-sm">
+            <h5 className="font-medium text-base">Cool Stuff</h5>
+            {Object.entries(dropdownMenus).map(([menuTitle, items]) =>
+              items.map((item) => (
+                <Link
+                  className="hover:underline underline-offset-4"
+                  key={item.href}
+                  href={item.href}
+                >
+                  {item.label}
+                </Link>
+              ))
+            )}
           </div>
         </Container>
         <Container className="border-t not-prose flex flex-col md:flex-row md:gap-2 gap-6 justify-between md:items-center">
