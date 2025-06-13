@@ -74,143 +74,121 @@ export async function POST(request: Request) {
 async function generateStrategies(options: GenerationOptions) {
   try {
     const { count, length, moods } = options;
-    const strategies: string[] = [];
 
-    // Try to generate using Gemini first
-    if (genAI && count > 0) {
-      try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        
-        // Build length description
-        const lengthDescriptions = {
-          concise: "very brief (3-8 words maximum)",
-          medium: "moderate length (5-12 words)",
-          verbose: "more detailed (8-20 words)"
-        };
-
-        // Build mood description
-        const moodDescription = moods.length > 0 
-          ? `The tone should reflect these moods: ${moods.join(', ')}. `
-          : 'Use a neutral, thoughtful tone. ';
-
-        // Add randomization to prevent repetitive responses
-        const randomSeed = Math.random().toString(36).substring(7);
-        const approaches = [
-          "Create an imperative statement",
-          "Ask a thought-provoking question", 
-          "Suggest a constraint or limitation",
-          "Propose a perspective shift",
-          "Recommend an action or behavior",
-          "Present a paradox or contradiction",
-          "Offer a metaphorical suggestion",
-          "Encourage experimentation"
-        ];
-
-        for (let i = 0; i < count; i++) {
-          const randomApproach = approaches[Math.floor(Math.random() * approaches.length)];
-          
-          // Add strong anti-repetition measures
-          const bannedStarters = ["Embrace", "Accept", "Consider", "Try", "Think", "Use", "Look"];
-          const encouragedStarters = [
-            "What if", "Where is", "How might", "Why not", "When does", "Who would",
-            "Remove", "Add", "Subtract", "Multiply", "Reverse", "Ignore", "Amplify",
-            "Whisper", "Shout", "Freeze", "Accelerate", "Simplify", "Complicate"
-          ];
-          
-          const randomBannedWord = bannedStarters[Math.floor(Math.random() * bannedStarters.length)];
-          const randomEncouragedStarter = encouragedStarters[Math.floor(Math.random() * encouragedStarters.length)];
-          
-          const prompt = `Session ID: ${randomSeed}-${i}-${Date.now()}
-
-You are Brian Eno creating oblique strategy card #${i + 1} of ${count}.
-
-CRITICAL ANTI-REPETITION RULES:
-- NEVER start with "${randomBannedWord}" or any form of "Embrace"
-- AVOID overused words like: ${bannedStarters.join(", ")}
-- Consider starting with: "${randomEncouragedStarter}" or similar
-- Each strategy must be completely different from others
-- Break patterns and surprise the user
-
-Requirements for this strategy:
-- Length: ${lengthDescriptions[length]}
-- Approach: ${randomApproach}
-- ${moodDescription}
-
-Generate something in the authentic style of these originals:
-- "What would your closest friend do?"
-- "Honor thy error as a hidden intention"
-- "Is it finished?"
-- "What mistakes did you make last time?"
-- "Where is the edge?"
-- "Add something that shouldn't be there"
-- "Make a blank valuable by putting it in an exquisite frame"
-- "Change instrument roles"
-- "Go slowly all the way round the outside"
-- "Use filters"
-- "Repetition is a form of change"
-- "What context would look right?"
-- "Reverse"
-
-IMPORTANT: Be genuinely creative and unexpected. Avoid clichés and overused patterns.
-
-Generate ONE completely unique oblique strategy:`;
-
-          const result = await model.generateContent(prompt);
-          const response = await result.response;
-          const text = response.text().trim();
-          
-          // Clean up the response and check for banned words
-          let cleanedStrategy = text
-            .replace(/^["']|["']$/g, '') // Remove surrounding quotes
-            .replace(/\.$/, '') // Remove trailing period
-            .trim();
-
-          // If it starts with banned words, try to fix it or regenerate fallback
-          if (bannedStarters.some(word => cleanedStrategy.toLowerCase().startsWith(word.toLowerCase()))) {
-            console.log(`Rejected repetitive strategy: ${cleanedStrategy}`);
-            // Use a fallback from authentic strategies instead
-            const fallback = authenticStrategies[Math.floor(Math.random() * authenticStrategies.length)];
-            cleanedStrategy = fallback;
-          }
-
-          if (cleanedStrategy && cleanedStrategy.length > 0) {
-            strategies.push(cleanedStrategy);
-          }
-        }
-
-        if (strategies.length > 0) {
-          return NextResponse.json({
-            strategies,
-            source: 'gemini'
-          });
-        }
-      } catch (geminiError) {
-        console.error('Gemini API error:', geminiError);
-        // Fall through to use authentic strategies
-      }
+    // Only try to generate using Gemini - no fallbacks to authentic strategies
+    if (!genAI) {
+      return NextResponse.json({
+        error: 'AI service is not configured. Please check API key configuration.'
+      }, { status: 500 });
     }
 
-    // Fallback to authentic oblique strategies
-    const selectedStrategies = authenticStrategies
-      .sort(() => Math.random() - 0.5)
-      .slice(0, count);
+    if (count <= 0) {
+      return NextResponse.json({
+        error: 'Invalid count specified'
+      }, { status: 400 });
+    }
 
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        maxOutputTokens: 50,
+        temperature: 0.9,
+      }
+    });
+    
+    // Add timeout wrapper
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('API request timeout')), 8000);
+    });
+    
+    // Build length description
+    const lengthDescriptions = {
+      concise: "very brief (3-8 words maximum)",
+      medium: "moderate length (5-12 words)",
+      verbose: "more detailed (8-20 words)"
+    };
+
+    // Build mood description
+    const moodDescription = moods.length > 0 
+      ? `The tone should reflect these moods: ${moods.join(', ')}. `
+      : 'Use a neutral, thoughtful tone. ';
+
+    // Define banned and encouraged starters
+    const bannedStarters = ["Embrace", "Accept", "Consider", "Try", "Think", "Use", "Look"];
+    const encouragedStarters = [
+      "What if", "Where is", "How might", "Why not", "When does", "Who would",
+      "Remove", "Add", "Subtract", "Multiply", "Reverse", "Ignore", "Amplify",
+      "Whisper", "Shout", "Freeze", "Accelerate", "Simplify", "Complicate"
+    ];
+
+    // Generate all strategies in parallel
+    const strategyPromises = Array.from({ length: count }, async (_, i) => {
+      const randomBannedWord = bannedStarters[Math.floor(Math.random() * bannedStarters.length)];
+      const randomEncouragedStarter = encouragedStarters[Math.floor(Math.random() * encouragedStarters.length)];
+      
+      const prompt = `Create 1 oblique strategy. ${lengthDescriptions[length]}. ${moodDescription}Style: "${randomEncouragedStarter}..." Avoid: "${randomBannedWord}"`;
+
+      // Wrap the API call with timeout
+      const generateWithTimeout = async () => {
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        return response.text().trim();
+      };
+
+      const text = await Promise.race([
+        generateWithTimeout(),
+        timeoutPromise
+      ]) as string;
+      
+      // Clean up the response
+      let cleanedStrategy = text
+        .replace(/^["']|["']$/g, '') // Remove quotes
+        .replace(/\.$/, '') // Remove period
+        .trim();
+
+      // Reject if it starts with banned words - throw error instead of fallback
+      if (bannedStarters.some(word => cleanedStrategy.toLowerCase().startsWith(word.toLowerCase()))) {
+        throw new Error(`Generated strategy starts with banned word: ${cleanedStrategy}`);
+      }
+
+      if (!cleanedStrategy || cleanedStrategy.length === 0) {
+        throw new Error('Empty strategy generated');
+      }
+
+      return cleanedStrategy;
+    });
+
+    // Wait for all strategies to complete (or timeout/fail)
+    const results = await Promise.allSettled(strategyPromises);
+    const strategies: string[] = [];
+    
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        strategies.push(result.value);
+      } else {
+        console.error(`Strategy ${index + 1} failed:`, result.reason);
+      }
+    });
+
+    // If no strategies were successfully generated, return error
+    if (strategies.length === 0) {
+      return NextResponse.json({
+        error: 'Unable to generate AI strategies at this time. Please try again later.'
+      }, { status: 504 });
+    }
+
+    // Return only AI-generated strategies
     return NextResponse.json({
-      strategies: selectedStrategies,
-      source: 'authentic'
+      strategies,
+      source: 'gemini'
     });
 
   } catch (error) {
     console.error('Error generating oblique strategies:', error);
     
-    // Always return something, even if there's an error
-    const fallbackStrategies = authenticStrategies
-      .sort(() => Math.random() - 0.5)
-      .slice(0, options.count);
-      
+    // Return error instead of fallback strategies
     return NextResponse.json({
-      strategies: fallbackStrategies,
-      source: 'fallback'
-    });
+      error: 'Unable to generate AI strategies at this time. Please try again later.'
+    }, { status: 504 });
   }
 }

@@ -97,9 +97,14 @@ export default function ObliqueGenerator() {
                 throw new Error('Empty response received');
             }
 
-            const data: ApiResponse = JSON.parse(text);
+            const data = JSON.parse(text);
             
-            // Validate response structure
+            // Check if the API returned an error
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Validate response structure for successful responses
             if (!data.strategies || !Array.isArray(data.strategies)) {
                 throw new Error('Invalid response format');
             }
